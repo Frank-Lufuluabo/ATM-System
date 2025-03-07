@@ -28,10 +28,10 @@ namespace ATMSystem.UI
                 }
                 catch
                 {
-                    Console.WriteLine("Invalid input. Try again");
+                    Console.WriteLine("Invalid input. Try again.");
                 }
-
             }
+            return default;
         }
     }
 }
