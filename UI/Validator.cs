@@ -28,7 +28,7 @@ namespace ATMSystem.UI
                 }
                 catch
                 {
-                    Console.WriteLine("Invalid input. Try again.");
+                    Utility.PrintMessage("Invalid input. Try again.", false);
                 }
             }
             return default;
