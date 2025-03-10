@@ -17,6 +17,23 @@ namespace ATMSystem.App
             };
         }
 
-       
+        public void CheckUserCardNumAndPassword()
+        {
+            bool isCorrectionLogin = false;
+
+            UserAccount tempUserAccount = new UserAccount();
+
+            tempUserAccount.CardNumber = Validator.Convert<long>("Your card number.");
+            tempUserAccount.CardPin = Convert.ToInt32(Utility.GetSecretInput("Enter your Card PIN"));
+
+            Console.WriteLine("\nChecking card number and PIN...");
+            int timer = 10;
+            for(int i = 0; i < timer; ++)
+            {
+                Console.Write(".");
+                Thread.Sleep(200); 
+            }
+            Console.Clear();
+        }
     }
 }

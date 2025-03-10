@@ -7,8 +7,9 @@ namespace ATMSystem.App
         static void Main(string[] args)
         {
             AppScreen.Welcome();
-            long cardNumber = Validator.Convert<long>("Your card number");
-            Console.WriteLine($"your Name is {cardNumber}");
+            ATMSystem atmSystem = new ATMSystem();
+
+            atmSystem.CheckUserCardNumAndPassword();
 
             Utility.PressEnterToContinue();
         }
