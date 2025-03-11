@@ -8,8 +8,9 @@ namespace ATMSystem.App
         {
             AppScreen.Welcome();
             ATMSystem atmSystem = new ATMSystem();
-
+            atmSystem.InitializeData();
             atmSystem.CheckUserCardNumAndPassword();
+            atmSystem.Welcome();
 
             Utility.PressEnterToContinue();
         }

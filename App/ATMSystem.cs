@@ -8,7 +8,7 @@ namespace ATMSystem.App
         private List<UserAccount> userAccountList;
         private UserAccount selectedAccount;
 
-        public void Initializedata()
+        public void InitializeData()
         {
             userAccountList = new List<UserAccount>
             {
@@ -20,20 +20,50 @@ namespace ATMSystem.App
         public void CheckUserCardNumAndPassword()
         {
             bool isCorrectionLogin = false;
-
-            UserAccount tempUserAccount = new UserAccount();
-
-            tempUserAccount.CardNumber = Validator.Convert<long>("Your card number.");
-            tempUserAccount.CardPin = Convert.ToInt32(Utility.GetSecretInput("Enter your Card PIN"));
-
-            Console.WriteLine("\nChecking card number and PIN...");
-            int timer = 10;
-            for(int i = 0; i < timer; ++)
+            while (isCorrectionLogin == false)
             {
-                Console.Write(".");
-                Thread.Sleep(200); 
+                UserAccount inputAcccount = AppScreen.UserLoginForm();
+                AppScreen.LoginProgress();
+                foreach (UserAccount account in userAccountList)
+                {
+                    selectedAccount = account;
+                    if (inputAcccount.CardNumber.Equals(selectedAccount.CardNumber))
+                    {
+                        selectedAccount.TotalLogin++;
+
+                        if (inputAcccount.CardPin.Equals(selectedAccount.CardPin)) 
+                        {
+                            selectedAccount = account;
+
+                            if (!selectedAccount.IsLocked || selectedAccount.TotalLogin > 3)
+                            {
+                                AppScreen.PrintLockScreen();
+                            }
+                            else
+                            {
+                                selectedAccount.TotalLogin = 0;
+                                isCorrectionLogin = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            if (isCorrectionLogin == false) 
+            {
+                Utility.PrintMessage("\nInvalid card number or PIN.", false);
+                selectedAccount.IsLocked = selectedAccount.TotalLogin == 3;
+                if (selectedAccount.IsLocked)
+                {
+                    AppScreen.PrintLockScreen();
+                }
             }
             Console.Clear();
+        }
+
+        public void Welcome()
+        {
+            Console.WriteLine($"Welcome back, {selectedAccount.FullName}");
         }
     }
 }
