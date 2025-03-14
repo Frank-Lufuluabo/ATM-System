@@ -8,6 +8,13 @@ namespace ATMSystem.App
         private List<UserAccount> userAccountList;
         private UserAccount selectedAccount;
 
+        public void Run()
+        {
+            AppScreen.Welcome();
+            CheckUserCardNumAndPassword();
+            AppScreen.WelcomeCustomer(selectedAccount.FullName);
+            AppScreen.DisplayAppMenu();
+        }
         public void InitializeData()
         {
             userAccountList = new List<UserAccount>
@@ -19,8 +26,8 @@ namespace ATMSystem.App
 
         public void CheckUserCardNumAndPassword()
         {
-            bool isCorrectionLogin = false;
-            while (isCorrectionLogin == false)
+            bool isCorrectLogin = false;
+            while (isCorrectLogin == false)
             {
                 UserAccount inputAcccount = AppScreen.UserLoginForm();
                 AppScreen.LoginProgress();
@@ -42,28 +49,13 @@ namespace ATMSystem.App
                             else
                             {
                                 selectedAccount.TotalLogin = 0;
-                                isCorrectionLogin = true;
+                                isCorrectLogin = true;
                                 break;
                             }
                         }
                     }
                 }
             }
-            if (isCorrectionLogin == false) 
-            {
-                Utility.PrintMessage("\nInvalid card number or PIN.", false);
-                selectedAccount.IsLocked = selectedAccount.TotalLogin == 3;
-                if (selectedAccount.IsLocked)
-                {
-                    AppScreen.PrintLockScreen();
-                }
-            }
-            Console.Clear();
-        }
-
-        public void Welcome()
-        {
-            Console.WriteLine($"Welcome back, {selectedAccount.FullName}");
         }
     }
 }

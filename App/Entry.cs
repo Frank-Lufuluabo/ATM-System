@@ -6,13 +6,9 @@ namespace ATMSystem.App
     {
         static void Main(string[] args)
         {
-            AppScreen.Welcome();
             ATMSystem atmSystem = new ATMSystem();
             atmSystem.InitializeData();
-            atmSystem.CheckUserCardNumAndPassword();
-            atmSystem.Welcome();
-
-            Utility.PressEnterToContinue();
+            atmSystem.Run();
         }
     }
 }
