@@ -1,5 +1,6 @@
 ﻿
 using ATMSystem.Domain.Entities;
+using System.Runtime.ConstrainedExecution;
 
 namespace ATMSystem.UI
 {
@@ -72,6 +73,53 @@ namespace ATMSystem.UI
             Console.WriteLine("Thank you for using My ATM App.");
             Utility.PrintDotAnimation();
             Console.Clear();
+        }
+
+        internal static int SelectAmount()
+        {
+            Console.WriteLine("");
+            Console.WriteLine(":1.{0}500      5.{0}10,000", cur);
+            Console.WriteLine(":2.{0}1000     6.{0}15,000", cur);
+            Console.WriteLine(":3.{0}2000     7.{0}20,000", cur);
+            Console.WriteLine(":4.{0}5000     8.{0}40,000", cur);
+            Console.WriteLine(":0.Other");
+            Console.WriteLine("");
+
+            int selectedAmount = Validator.Convert<int>("option:");
+            switch (selectedAmount)
+            {
+                case 1:
+                    return 500;
+                    break;
+                case 2:
+                    return 1000;
+                    break;
+                case 3:
+                    return 2000;
+                    break;
+                case 4:
+                    return 5000;
+                    break;
+                case 5:
+                    return 10000;
+                    break;
+                case 6:
+                    return 15000;
+                    break;
+                case 7:
+                    return 20000;
+                    break;
+                case 8:
+                    return 40000;
+                    break;
+                case 0:
+                    return 0;
+                    break;
+                default:
+                    Utility.PrintMessage("Invalid input. Try again.", false);
+                    return -1;
+                    break;
+            }
         }
     }
 }
