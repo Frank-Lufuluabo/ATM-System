@@ -5,10 +5,12 @@ using ATMSystem.UI;
 
 namespace ATMSystem.App
 {
-    class ATMSystem : IUserLogin, IUserAccountActions
+    class ATMSystem : IUserLogin, IUserAccountActions, ITransaction
     {
         private List<UserAccount> userAccountList;
         private UserAccount selectedAccount;
+        private List<Transaction> _listOfTransactions;
+        private const decimal minimumKeptAmount = 500;
 
         public void Run()
         {
@@ -25,6 +27,7 @@ namespace ATMSystem.App
                 new UserAccount{Id=1, FullName = "Frank Lufuluabo", AccountNumber = 123456, CardNumber = 987987, CardPin = 123123, AccountBalance = 5000.00m, IsLocked = false },
                 new UserAccount{Id=2, FullName = "Joe Smith", AccountNumber = 456789, CardNumber = 654654, CardPin = 456456, AccountBalance = 7000.00m, IsLocked = true },
             };
+            _listOfTransactions = new List<Transaction>();
         }
 
         public void CheckUserCardNumAndPassword()
@@ -110,7 +113,7 @@ namespace ATMSystem.App
 
         public void PlaceDeposit()
         {
-            Console.WriteLine("\nOnly multiples of 500 and 1000 naira allowed.\n");
+            Console.WriteLine("\nOnly multiples of 500 and 1000 rand allowed.\n");
             var transaction_amt = Validator.Convert<int>($"amount {AppScreen.cur}");
 
             //Simulate counting
@@ -139,7 +142,7 @@ namespace ATMSystem.App
             //Bind transaction details to transaction object
             InsertTransaction(selectedAccount.Id, TransactionType.Deposit, transaction_amt, "");
 
-            //update account balance
+            //Update account balance
             selectedAccount.AccountBalance += transaction_amt;
 
             //Print success message
@@ -173,7 +176,7 @@ namespace ATMSystem.App
             }
             if (transaction_amt % 500 != 0)
             {
-                Utility.PrintMessage("You can only withdraw amount in multiples of 500 or 1000 naira. Try again.", false);
+                Utility.PrintMessage("You can only withdraw amount in multiples of 500 or 1000 rand. Try again.", false);
                 return;
             }
             //Business logic validations
@@ -200,6 +203,65 @@ namespace ATMSystem.App
             //Success message
             Utility.PrintMessage($"You have successfully withdrawn " +
                 $"{Utility.FormatAmount(transaction_amt)}.", true);
+        }
+
+        private bool PreviewBankNotesCount(int amount)
+        {
+            int thousandNotesCount = amount / 1000;
+            int fiveHundredNotesCount = (amount % 1000) / 500;
+
+            Console.WriteLine("\nSummary");
+            Console.WriteLine("------");
+            Console.WriteLine($"{AppScreen.cur}1000 X {thousandNotesCount} = {1000 * thousandNotesCount}");
+            Console.WriteLine($"{AppScreen.cur}500 X {fiveHundredNotesCount} = {500 * fiveHundredNotesCount}");
+            Console.WriteLine($"Total amount: {Utility.FormatAmount(amount)}\n\n");
+
+            int opt = Validator.Convert<int>("1 to confirm");
+            return opt.Equals(1);
+
+        }
+
+        public void InsertTransaction(long _UserBankAccountId, TransactionType _tranType, decimal _tranAmount, string _desc)
+        {
+            //Create a new transaction object
+            var transaction = new Transaction()
+            {
+                TransactionId = Utility.GetTransactionId(),
+                UserBankAccountId = _UserBankAccountId,
+                TransactionDate = DateTime.Now,
+                TransactionType = _tranType,
+                TransactionAmount = _tranAmount,
+                Descriprion = _desc
+            };
+
+            //Add transaction object to the list
+            _listOfTransactions.Add(transaction);
+        }
+
+        public void ViewTransaction()
+        {
+            var filteredTransactionList = _listOfTransactions.Where(t => t.UserBankAccountId == selectedAccount.Id).ToList();
+            //Check if there's a transaction
+            if (filteredTransactionList.Count <= 0)
+            {
+                Utility.PrintMessage("You have no transaction yet.", true);
+            }
+            else
+            {
+                var table = new ConsoleTable("Id", "Transaction Date", "Type", "Descriptions", "Amount " + AppScreen.cur);
+                foreach (var tran in filteredTransactionList)
+                {
+                    table.AddRow(tran.TransactionId, tran.TransactionDate, tran.TransactionType, tran.Descriprion, tran.TransactionAmount);
+                }
+                table.Options.EnableCount = false;
+                table.Write();
+                Utility.PrintMessage($"You have {filteredTransactionList.Count} transaction(s)", true);
+            }
+        }
+
+        void ITransaction.ViewTransaction()
+        {
+            throw new NotImplementedException();
         }
     }
 }

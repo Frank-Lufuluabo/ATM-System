@@ -1,10 +1,18 @@
 ﻿
+using System.Globalization;
 using System.Text;
 
 namespace ATMSystem.UI
 {
     public static class Utility
     {
+        private static long tranId;
+        private static CultureInfo culture = new CultureInfo("en-SA");
+
+        public static long GetTransactionId()
+        { 
+            return ++tranId;
+        }
         public static string GetSecretInput(string prompt)
         {
             bool isPrompt = true;
@@ -80,6 +88,11 @@ namespace ATMSystem.UI
         {
             Console.WriteLine("\n\nPress Enter to continue ...\n");
             Console.ReadLine();
+        }
+
+        public static string FormatAmount(decimal amt)
+        { 
+            return String.Format(culture, "{0:C2}", amt);
         }
     }
 }

@@ -6,6 +6,7 @@ namespace ATMSystem.UI
 {
     public static class AppScreen
     {
+          internal const string cur = "R ";
           internal static void Welcome()
         {
             // Clears the console screen
@@ -120,6 +121,15 @@ namespace ATMSystem.UI
                     return -1;
                     break;
             }
+        }
+
+        internal InternalTransfer InternalTransferForm()
+        {
+            var internalTransfer = new InternalTransfer();
+            internalTransfer.ReciepeintBankAccountNumber = Validator.Convert<long>("recipient's account number:");
+            internalTransfer.TransferAmount = Validator.Convert<decimal>($"amount {cur}");
+            internalTransfer.RecipientBankAccountName = Utility.GetUserInput("recipient's name:");
+            return internalTransfer;
         }
     }
 }
