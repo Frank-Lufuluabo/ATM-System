@@ -2,6 +2,7 @@
 using ATMSystem.Domain.Enums;
 using ATMSystem.Domain.Interfaces;
 using ATMSystem.UI;
+using ConsoleTables;
 
 namespace ATMSystem.App
 {
@@ -11,14 +12,23 @@ namespace ATMSystem.App
         private UserAccount selectedAccount;
         private List<Transaction> _listOfTransactions;
         private const decimal minimumKeptAmount = 500;
+        private readonly AppScreen screen;
+
+        public ATMSystem()
+        {
+            screen = new AppScreen();
+        }
 
         public void Run()
         {
             AppScreen.Welcome();
             CheckUserCardNumAndPassword();
             AppScreen.WelcomeCustomer(selectedAccount.FullName);
-            AppScreen.DisplayAppMenu();
-            ProcessMenuoption();
+            while (true) 
+            {
+                AppScreen.DisplayAppMenu();
+                ProcessMenuoption();
+            }
         }
         public void InitializeData()
         {
@@ -259,9 +269,60 @@ namespace ATMSystem.App
             }
         }
 
-        void ITransaction.ViewTransaction()
+        private void ProcessInternalTransfer(InternalTransfer internalTransfer)
         {
-            throw new NotImplementedException();
+            if (internalTransfer.TransferAmount <= 0)
+            {
+                Utility.PrintMessage("Amount needs to be more than zero. Try again.", false);
+                return;
+            }
+            //Check sender's account balance
+            if (internalTransfer.TransferAmount > selectedAccount.AccountBalance)
+            {
+                Utility.PrintMessage($"Transfer failed. You do not hav enough balance" +
+                    $" to transfer {Utility.FormatAmount(internalTransfer.TransferAmount)}", false);
+                return;
+            }
+            //Check the minimum kept amount 
+            if ((selectedAccount.AccountBalance - internalTransfer.TransferAmount) < minimumKeptAmount)
+            {
+                Utility.PrintMessage($"Transfer faile. Your account needs to have minimum" +
+                    $" {Utility.FormatAmount(minimumKeptAmount)}", false);
+                return;
+            }
+
+            //Check reciever's account number is valid
+            var selectedBankAccountReciever = (from userAcc in userAccountList
+                                               where userAcc.AccountNumber == internalTransfer.ReciepeintBankAccountNumber
+                                               select userAcc).FirstOrDefault();
+            if (selectedBankAccountReciever == null)
+            {
+                Utility.PrintMessage("Transfer failed. Recieber bank account number is invalid.", false);
+                return;
+            }
+            //Check receiver's name
+            if (selectedBankAccountReciever.FullName != internalTransfer.RecipientBankAccountName)
+            {
+                Utility.PrintMessage("Transfer Failed. Recipient's bank account name does not match.", false);
+                return;
+            }
+
+            //Add transaction to transactions record- sender
+            InsertTransaction(selectedAccount.Id, TransactionType.Transfer, -internalTransfer.TransferAmount, "Transfered " +
+                $"to {selectedBankAccountReciever.AccountNumber} ({selectedBankAccountReciever.FullName})");
+            //Update sender's account balance
+            selectedAccount.AccountBalance -= internalTransfer.TransferAmount;
+
+            //Add transaction record-reciever
+            InsertTransaction(selectedBankAccountReciever.Id, TransactionType.Transfer, internalTransfer.TransferAmount, "Transfered from " +
+                $"{selectedAccount.AccountNumber}({selectedAccount.FullName})");
+            //Update reciever's account balance
+            selectedBankAccountReciever.AccountBalance += internalTransfer.TransferAmount;
+            //Print success message
+            Utility.PrintMessage($"You have successfully transfered" +
+                $" {Utility.FormatAmount(internalTransfer.TransferAmount)} to " +
+                $"{internalTransfer.RecipientBankAccountName}", true);
+
         }
     }
 }

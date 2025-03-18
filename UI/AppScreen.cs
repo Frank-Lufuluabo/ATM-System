@@ -4,34 +4,32 @@ using System.Runtime.ConstrainedExecution;
 
 namespace ATMSystem.UI
 {
-    public static class AppScreen
+    public class AppScreen
     {
-          internal const string cur = "R ";
-          internal static void Welcome()
+        internal const string cur = "R ";
+        internal static void Welcome()
         {
-            // Clears the console screen
+            //clears the console screen
             Console.Clear();
-            // Sets the title of the console Windows 
-            Console.Title = "ATM System";
-            // Sets the text color or background color to white
+            //sets the title of the console window
+            Console.Title = "My ATM System";
+            //sets the text color or foreground color to white
             Console.ForegroundColor = ConsoleColor.White;
 
-            // Set the welcome message 
-            Console.WriteLine("\n\n---------------------- Welcome to ATM System ----------------------\n\n");
-
-            //Prompt the user to insert atm card
-            Console.WriteLine("Please insert your ATM Card");
-            Console.WriteLine("Note: Actual ATM machine will accept and validate a physical ATM card, read the card number and validate it.");
-
+            //set the welcome message 
+            Console.WriteLine("\n\n-----------------Welcome to My ATM App-----------------\n\n");
+            //prompt the user to insert atm card
+            Console.WriteLine("Please insert your ATM card");
+            Console.WriteLine("Note: Actual ATM machine will accept and validate" +
+                " a physical ATM card, read the card number and validate it.");
             Utility.PressEnterToContinue();
         }
-
 
         internal static UserAccount UserLoginForm()
         {
             UserAccount tempUserAccount = new UserAccount();
 
-            tempUserAccount.CardNumber = Validator.Convert<long>("Your card number");
+            tempUserAccount.CardNumber = Validator.Convert<long>("Your card number.");
             tempUserAccount.CardPin = Convert.ToInt32(Utility.GetSecretInput("Enter your card PIN"));
             return tempUserAccount;
         }
@@ -42,11 +40,11 @@ namespace ATMSystem.UI
             Utility.PrintDotAnimation();
         }
 
-        internal static void PrintLockScreen() 
+        internal static void PrintLockScreen()
         {
             Console.Clear();
-            Utility.PrintMessage("Your account is locked. Please go the nearest branch to unlock your account. Thank you.", true);
-            Utility.PressEnterToContinue();
+            Utility.PrintMessage("Your account is locked. Please go to the nearest branch" +
+                " to unlock your account. Thank you.", true);
             Environment.Exit(1);
         }
 
@@ -122,7 +120,6 @@ namespace ATMSystem.UI
                     break;
             }
         }
-
         internal InternalTransfer InternalTransferForm()
         {
             var internalTransfer = new InternalTransfer();
